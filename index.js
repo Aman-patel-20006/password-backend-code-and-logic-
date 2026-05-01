@@ -7,6 +7,8 @@ var session = require('express-session')
 var LocalStrategy = require('passport-local').Strategy;
 const MongoStore = require("connect-mongo");
 const passportLocalMongoose = require('passport-local-mongoose').default;
+const nodemailer = require("nodemailer");
+const bcrypt = require('bcrypt');
 //const passport = require("passport");
 let path=require("path");
 const app = express();
@@ -36,49 +38,19 @@ mongoose.connect("mongodb://127.0.0.1:27017/mydb").then(() => console.log("Mongo
   .catch(err => console.log(err));
 
 const usermodel = new mongoose.Schema({
-username:String,
+email:String,
+password: String,   // ✅ MUST HAVE
+  otp: String,
+  otpExpiry: Date
 });
-usermodel .plugin(passportLocalMongoose );
+usermodel.plugin(passportLocalMongoose, {
+  usernameField: 'email'
+});
 const userPass = mongoose.model('userPass', usermodel );
 passport.use(userPass.createStrategy());
 passport.serializeUser(userPass.serializeUser());
 passport.deserializeUser(userPass.deserializeUser());
-//password check
-// passport.use(new LocalStrategy(
-//   async function(username, password, done) {
-//     try {
-//       const user = await userPass.findOne({ username: username });
-//       if (!user) {
-//         return done(null, false, { message: "Username not found" });
-//       }
-//       if (user.password !== password) {
-//         return done(null, false, { message: "Password is incorrect" });
-//       }
-//       return done(null, user); // ✅ pass user on success
-//     } catch (err) {
-//       return done(err);
-//     }
-//   }
-// ));
-// passport.serializeUser(function(user, done) {
-//   //    console.log("serializeUser 1");
-//   // console.log("Serialize ID:", user.id);
-//   done(null, user.id);
-// });
-// //for again login
-// passport.deserializeUser(async function(userID, done) {
-//   try {
-//     // console.log("............................................");
-//     // console.log("deserializeUser 3");
-//     // console.log("userID:", userID);   // session se aayi id
-//     const user = await userPass.findById(userID);
-//     console.log("User from database:", user);  // database se mila user
-//     done(null, user);
-//   } catch (err) {
-//     done(err, null);
-//   }
-// });
-// , 
+
 app.get("/",(req,res)=>{
   if(req.isAuthenticated()){
     res.redirect("/profile");
@@ -91,9 +63,9 @@ app.get("/profile",(req,res)=>{
   console.log("Cookies:", req.headers.cookie);
   console.log("Session ID:", req.sessionID);
   console.log("User:", req.user);
-  let username=req.user.username;
+  let email=req.user.email;
   if(req.isAuthenticated()){
- res.render("welcome.ejs",{username});
+ res.render("welcome.ejs",{email});
   }else{
     res.redirect("/loginform");
   }
@@ -105,8 +77,9 @@ app.get("/loginform",(req,res)=>{
 });
 
 app.post('/login', async (req, res, next) => {
-  const { username, password } = req.body;
-  const user = await userPass.findOne({ username: username });
+  const { email, password } = req.body;
+  const user = await userPass.findOne({ email });
+  console.log(user);
   //  Username not found
   if (!user) {
     req.flash('error', "User not found ");
@@ -126,13 +99,15 @@ app.post('/login', async (req, res, next) => {
 
   })(req, res, next);
 });
+
 app.get("/signform",(req,res)=>{
   res.render("sign.ejs");
 })
 app.post("/singup", async (req, res) => {
   try {
-    const { username, password } = req.body;
-    const newUser = new userPass({ username });
+    const { email, password } = req.body;
+    console.log(email,password);
+    const newUser = new userPass({email });
     const registeredUser = await userPass.register(newUser, password);
     req.login(registeredUser, function (err) {
       if (err) return next(err);
@@ -142,6 +117,7 @@ app.post("/singup", async (req, res) => {
   if (err.name === "UserExistsError") {
     res.send(" Username already taken, plesase login <a href='/loginform'>login<a>");
   } else {
+    console.log(err);
     res.send("Something went wrong");
   }
 }
@@ -154,6 +130,79 @@ app.get("/logout", (req, res, next) => {
     res.redirect("/loginform"); // or home page
   });
 });
+//forget password
+app.get("/forgetPassword",(req,res)=>{
+  res.render("./forgetPassword");
+})
+// otp generater
+  function generateOTP() {
+    return Math.floor(100000 + Math.random() * 900000);
+  }
+app.post("/forgetPassword",async (req,res)=>{
+  let {email}=req.body;
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",   // ✅ correct
+    port: 465,
+    secure: true,
+    auth: {
+      user: "amanpatel64907@gmail.com",
+      pass: "vorz qxrw xamj ijsl"
+    }
+  });
+
+  let otp=generateOTP();
+
+const user = await userPass.findOneAndUpdate( {  email },{
+    otp: otp,
+    otpExpiry: Date.now() + 5 * 60 * 1000
+  },
+  { new: true }
+);
+  if (!user) {
+      req.flash('error', "Wrong password ");
+      return res.redirect('/loginform');
+    }
+  const mailOptions = {
+     from: "amanpatel64907@gmail.com",
+    to: email,
+    subject: "otp generate email",
+    text: `OPT FOR PASSWORD RESET IS ${otp } `
+  };
+  
+  transporter.sendMail(mailOptions, (err, info) => {
+    if (err) console.log("Error:", err);
+    else console.log("Email sent:", info.response);
+  });
+  res.render("./otpEnter",{email});
+})
+app.post("/otpCheck",async(req,res)=>{
+let {otp,email}=req.body;
+let user= await userPass.findOne({email});
+console.log(otp,email,user);
+let userotp=user.otp;
+if (user.otp == otp && user.otpExpiry > Date.now()) {
+ res.render("./passwored",{email})
+}else{
+ res.render("./otpEnter",{email,error:"otp is incorrect please enter correct otp"});
+}
+})
+app.post("/passwordUpadte",async(req,res)=>{
+  let{email,password1}=req.body;
+   // 🔐 hash new password
+try {
+    const user = await userPass.findOne({ email });
+    if (!user) {
+      return res.render("./passwored", { email, error: "User not found" });
+    }
+    // 🔥 correct way (passport-local-mongoose)
+    await user.setPassword(password1);
+    await user.save();
+       res.render("index.ejs",{success:"password is reset please login"})
+  } catch (err) {
+    console.log(err);
+    res.send("Error updating password");
+  }})
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })

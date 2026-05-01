@@ -1,43 +1,24 @@
-<!-- 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
 
-      <form method="POST" action="/login">
-      <input name="username" placeholder="username"/>
-      <input name="password" type="password" placeholder="password"/>
-      <button>Login</button>
-    </form> -->
-    <%# if (error) { %>
-   <!-- <p><%# error %></p> -->
-  <!--   <a href="/signform">signup</a> -->
-    <%# } %>
-<!-- </body>
-</html> -->
-
-
-
-
-
-
-
-<!DOCTYPE html>
-<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Playfair+Display:wght@500&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Playfair+Display:wght@500&display=swap"
+    rel="stylesheet">
 
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       min-height: 100vh;
@@ -54,7 +35,7 @@
       background: #fff;
       border-radius: 16px;
       padding: 2rem;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     }
 
     .brand {
@@ -85,7 +66,7 @@
     .field input {
       width: 100%;
       height: 40px;
-        padding: 0 15px;
+      padding: 0 15px;
       border-radius: 8px;
       border: 1px solid #ddd;
       outline: none;
@@ -127,12 +108,13 @@
       text-decoration: none;
     }
 
-    h4{
+    h4 {
       text-align: center;
       color: red;
     }
   </style>
 </head>
+
 <body>
 
   <div class="card">
@@ -140,36 +122,52 @@
       <h1>Welcome back</h1>
       <p>Login in to your account</p>
     </div>
-    <h4><%= error %></h4>
-    <!-- ✅ FORM START -->
-    <form action="/login" method="post">
-      <div class="field">
-        <label>Username</label>
-        <div class="input-wrap">
-          <input type="text" name="username" placeholder="Enter username" required>
-        </div>
-      </div>
+    <% if (typeof error !=="undefined" && error) { %>
+      <h4>
+        <%= error %>
+      </h4>
+      <% } %>
 
-      <div class="field">
-        <label>Password</label>
-        <div class="input-wrap">
-          <input type="password" id="password" name="password" placeholder="Enter password" required>
+        <% if ((typeof success !=="undefined" && success) ) { %>
+          <h4>
+            <%= success %>
+          </h4>
+          <% } %>
 
-          <!-- ✅ FIX: type="button" -->
-          <button type="button" class="toggle-pw" onclick="togglePassword()">👁</button>
-        </div>
-      </div>
+            <% if ((typeof error !=="undefined") && error && error.includes("password")) { %>
+              <p class="signup">
+                <a href="/forgetPassword">Forget Password</a>
+              </p>
+              <% } %>
 
-      <!-- ✅ BUTTON INSIDE FORM -->
-      <button class="btn-login" type="submit">Login </button>
+                <!-- ✅ FORM START -->
+                <form action="/login" method="post">
+                  <div class="field">
+                   <h2><label id="email">Email</label></h2> 
+                    <div class="input-wrap">
+                      <input type="email" name="email" placeholder="Enter email" required for="email">
+                    </div>
+                  </div>
 
-    </form>
+                  <div class="field">
+                    <label>Password</label>
+                    <div class="input-wrap">
+                      <input type="password" id="password" name="password" placeholder="Enter password" required>
 
-    <!-- ✅ FORM END -->
+                      <!-- ✅ FIX: type="button" -->
+                      <button type="button" class="toggle-pw" onclick="togglePassword()">👁</button>
+                    </div>
+                  </div>
 
-    <p class="signup">
-           Don't have an account <a href="/signform">Sign up</a>
-    </p>
+                  <!-- ✅ BUTTON INSIDE FORM -->
+                  <button class="btn-login" type="submit">Login </button>
+                </form>
+
+                <!-- ✅ FORM END -->
+
+                <p class="signup">
+                  Don't have an account <a href="/signform">Sign up</a>
+                </p>
 
   </div>
 
@@ -186,4 +184,5 @@
   </script>
 
 </body>
+
 </html>
