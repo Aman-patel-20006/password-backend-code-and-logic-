@@ -1,17 +1,24 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Playfair+Display:wght@500&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Playfair+Display:wght@500&display=swap"
+    rel="stylesheet">
 
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       min-height: 100vh;
@@ -28,7 +35,7 @@
       background: #fff;
       border-radius: 16px;
       padding: 2rem;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     }
 
     .brand {
@@ -59,7 +66,7 @@
     .field input {
       width: 100%;
       height: 40px;
-        padding: 0 15px;
+      padding: 0 15px;
       border-radius: 8px;
       border: 1px solid #ddd;
       outline: none;
@@ -101,31 +108,42 @@
       text-decoration: none;
     }
 
-    h4{
+    h4 {
       text-align: center;
       color: red;
     }
   </style>
 </head>
+
 <body>
 
   <div class="card">
     <div class="brand">
-      <h1>ENTER YOUR OTP  WHICH SEND ON YPUR EMAIL</h1>
+      <h1>PLEASE ENTER YOUR OTP WHICH IS SENT TO YOUR EMAIL</h1>
     </div>
     <!-- ✅ FORM START -->
     <form action="/otpCheck" method="post">
       <div class="field">
         <label>OTP</label>
         <div class="input-wrap">
-            <input type="hidden" name="email" value=<%= email %>>
+          <input type="hidden" name="email" value=<%=email %>>
           <input type="text" name="otp" placeholder="Enter OTP" required>
         </div>
       </div>
+         <% if (typeof error !=="undefined" && error) { %>
+      <h4>
+        <%= error %>
+      </h4>
+      <% } %>
       <!-- ✅ BUTTON INSIDE FORM -->
       <button class="btn-login" type="submit">SUBMIT</button>
     </form>
-
+<a href="/forgetPassword" onclick="return confirmResend();">RESEND OTP</a>
   </div>
 </body>
 </html>
+<script>
+  function confirmResend() {
+    return confirm("Are you sure you want to resend the OTP?");
+  }
+</script>

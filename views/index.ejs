@@ -112,6 +112,10 @@
       text-align: center;
       color: red;
     }
+    h3 {
+      text-align: center;
+      color: green;
+    }
   </style>
 </head>
 
@@ -120,7 +124,7 @@
   <div class="card">
     <div class="brand">
       <h1>Welcome back</h1>
-      <p>Login in to your account</p>
+      <p>Login to your account</p>
     </div>
     <% if (typeof error !=="undefined" && error) { %>
       <h4>
@@ -129,9 +133,9 @@
       <% } %>
 
         <% if ((typeof success !=="undefined" && success) ) { %>
-          <h4>
+          <h3>
             <%= success %>
-          </h4>
+          </h3>
           <% } %>
 
             <% if ((typeof error !=="undefined") && error && error.includes("password")) { %>
@@ -155,16 +159,14 @@
                       <input type="password" id="password" name="password" placeholder="Enter password" required>
 
                       <!-- ✅ FIX: type="button" -->
-                      <button type="button" class="toggle-pw" onclick="togglePassword()">👁</button>
+                      <button type="button" class="toggle-pw" onclick="togglePassword()"> &#128065;</button>
                     </div>
                   </div>
 
                   <!-- ✅ BUTTON INSIDE FORM -->
                   <button class="btn-login" type="submit">Login </button>
                 </form>
-
                 <!-- ✅ FORM END -->
-
                 <p class="signup">
                   Don't have an account <a href="/signform">Sign up</a>
                 </p>
@@ -175,14 +177,12 @@
   <script>
     function togglePassword() {
       const pw = document.getElementById("password");
-      if (pw.type === "password") {
+      if (pw.type === "password"){
         pw.type = "text";
       } else {
         pw.type = "password";
       }
     }
   </script>
-
 </body>
-
 </html>

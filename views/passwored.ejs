@@ -120,7 +120,7 @@
 
       <div class="card">
         <div class="brand">
-          <h1>Password enter correct</h1>
+          <h1>Change Password</h1>
         <!-- ✅ FORM START -->
       <form action="/passwordUpadte" method="post" onsubmit="return checkPassword()">
            <input type="hidden" name="email" value=<%= email %>>
@@ -135,8 +135,7 @@
     <label>Confirm Password</label>
     <div class="input-wrap">
       <input type="password" id="password2" name="password2" placeholder="Confirm Password" required>
-
-      <button type="button" class="toggle-pw" onclick="togglePassword()">👁</button>
+      <button type="button" class="toggle-pw" onclick="togglePassword()"> &#128065;</button>
     </div>
   </div>
 
@@ -157,12 +156,14 @@
 function checkPassword() {
     const pass1 = document.getElementById("password1").value;
     const pass2 = document.getElementById("password2").value;
-
     if (pass1 !== pass2) {
         alert("Passwords do not match!");
         return false; // stop form submit
     }
-
+     if (pass1.length < 8) {
+        alert("Password must be at least 8 characters long.");
+        return false; // stop form submit
+      }
     return true; // allow submit
 }
 

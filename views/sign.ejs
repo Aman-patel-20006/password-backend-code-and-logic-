@@ -112,7 +112,19 @@
     </div>
 
     <!-- ✅ FORM START -->
-    <form action="/singup" method="post">
+    <form action="/singup" method="post" onsubmit="return checkPassword()">
+        <div class="field">
+        <label>Username</label>
+        <div class="input-wrap">
+          <input type="text" name="username" placeholder="Enter username" required>
+        </div>
+      </div>
+        <div class="field">
+        <label>Major subject</label>
+        <div class="input-wrap">
+          <input type="text" name="majorsubject" placeholder="Enter majorSubject" required>
+        </div>
+      </div>
       <div class="field">
         <label>Email</label>
         <div class="input-wrap">
@@ -123,8 +135,7 @@
       <div class="field">
         <label>Password</label>
         <div class="input-wrap">
-          <input type="password" id="password" name="password" placeholder="Enter password" required>
-
+      <input type="password" id="password" name="password" placeholder="Enter password" required>
           <!-- ✅ FIX: type="button" -->
           <button type="button" class="toggle-pw" onclick="togglePassword()">👁</button>
         </div>
@@ -149,6 +160,13 @@
         pw.type = "text";
       } else {
         pw.type = "password";
+      }
+    }
+    function checkPassword() {
+      const pw = document.getElementById("password");
+      if (pw.value.length < 8) {
+        alert("Password must be at least 8 characters long.");
+        return false; // stop form submit
       }
     }
   </script>
